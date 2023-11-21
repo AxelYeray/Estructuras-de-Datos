@@ -1,16 +1,15 @@
 class Graph:
     def __init__(self, vertices):
         self.V = vertices
-        self.graph = []
+        self.graph = []  # Inicializar como una lista vacía
 
     def add_edge(self, u, v, w):
         self.graph.append([u, v, w])
 
     def kruskal(self):
         result = []  # Almacenará el árbol de expansión mínima
-        self.graph = sorted(
-            self.graph, key=lambda item: item[2]
-        )  # Ordena las aristas por peso
+        self.graph = sorted(self.graph, key=lambda item: item[2])
+        # Ordena las aristas por peso
 
         parent = [i for i in range(self.V)]
         rank = [0] * self.V
@@ -27,13 +26,14 @@ class Graph:
             root_y = find_parent(y)
 
             if root_x != root_y:
-                if rank[root_x] < rank[root_y]:
-                    parent[root_x] = root_y
-                elif rank[root_x] > rank[root_y]:
+                    if rank[root_x] < rank[root_y]:
+                        parent[root_x] = root_y
+            elif rank[root_x] > rank[root_y]:
                     parent[root_y] = root_x
-                else:
+            else:
                     parent[root_x] = root_y
                     rank[root_y] += 1
+
 
         e = 0  # Contador de aristas
         i = 0  # Índice para recorrer las aristas

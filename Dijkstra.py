@@ -1,56 +1,85 @@
-def dijkstra(graph,src):
-    length = len(graph)
-    type_ = type(graph)
-    if type_ == list:
-        nodes = [i for i in xrange(length)]
-    elif type_ == dict:
-        nodes = graph.keys()
-
-    visited = [src]
-    path = {src:{src:[]}}
-    nodes.remove(src)
-    distance_graph = {src:0}
-    pre = next = src
-
-    while nodes:
-        distance = float('inf')
-        for v in visited:
-             for d in nodes:
-                new_dist = graph[src][v] + graph[v][d]
-                if new_dist <= distance:
-                    distance = new_dist
-                    next = d
-                    pre = v
-                    graph[src][d] = new_dist
-
-
-        path[src][next] = [i for i in path[src][pre]]
-        path[src][next].append(next)
-
-        distance_graph[next] = distance
-
-        visited.append(next)
-        nodes.remove(next)
-
-    return distance_graph, path
-
-
-if _name_ == '_main_':
-    graph_list = [   [0, 2, 1, 4, 5, 1],
-            [1, 0, 4, 2, 3, 4],
-            [2, 1, 0, 1, 2, 4],
-            [3, 5, 2, 0, 3, 3],
-            [2, 4, 3, 4, 0, 1],
-            [3, 4, 7, 3, 1, 0]]
-
-    graph_dict = {  "s1":{"s1": 0, "s2": 2, "s10": 1, "s12": 4, "s5":3},
-                    "s2":{"s1": 1, "s2": 0, "s10": 4, "s12": 2, "s5":2},
-                    "s10":{"s1": 2, "s2": 1, "s10": 0, "s12":1, "s5":4},
-                    "s12":{"s1": 3, "s2": 5, "s10": 2, "s12":0,"s5":1},
-                    "s5":{"s1": 3, "s2": 5, "s10": 2, "s12":4,"s5":0},
+## Grafo inicial
+def crear_grafo():
+    diccionario = {
+        "1": {"2": 3, "3": 1},
+        "2": {"6": 4},
+        "3": {"4": 5},
+        "4": {"1": 2, "5": 1},
+        "5": {"3": 2, "2": 2},
+        "6": {"5": 2},
     }
+    return diccionario
 
-    distance, path = dijkstra(graph_list, 2)
-    #print distance, '\n', path
-    distance, path = dijkstra(graph_dict, 's1')
-    print distance, '\n', path
+
+grafo = crear_grafo()
+
+print(
+    "El grafo dirigido de origen único y con pesos no negativos es: \n {} \n".format(
+        grafo
+    )
+)
+
+nodos_disponibles = list(grafo.keys())
+
+nodo_fuente = input(
+    "Ingrese el nodo de origen de la siguiente lista:  \n {} - ".format(
+        nodos_disponibles
+    )
+)
+while nodo_fuente not in nodos_disponibles:
+    nodo_fuente = input(
+        "Ingrese un nodo de origen válido de la siguiente lista:  \n {} - ".format(
+            nodos_disponibles
+        )
+    )
+
+nodo_destino = input(
+    "Ingrese el nodo de destino de la siguiente lista:  \n {} - ".format(
+        nodos_disponibles
+    )
+)
+while nodo_destino not in nodos_disponibles:
+    nodo_destino = input(
+        "Ingrese un nodo de destino válido de la siguiente lista:  \n {} - ".format(
+            nodos_disponibles
+        )
+    )
+
+while nodo_fuente == nodo_destino:
+    print("El nodo de origen y destino son iguales.")
+    nodo_destino = input(
+        "Ingrese un nodo de destino diferente:  \n {} - ".format(nodos_disponibles)
+    )
+
+nodo_fuente_final = nodo_fuente
+camino = {nodo: float("inf") for nodo in grafo}
+
+print("Diccionario de camino inicial \n {}".format(camino))
+
+distancia = 0
+visitados = []
+
+while nodo_fuente in grafo:
+    en_diccionario = grafo[nodo_fuente]
+
+    corto = min(en_diccionario.values())
+    s = None
+
+    for k in grafo[nodo_fuente]:
+        if grafo[nodo_fuente][k] == corto and (k not in visitados):
+            visitados.append(k)
+            distancia += corto  # Actualizar la distancia acumulada
+            s = k
+
+    nodo_fuente = s
+
+    if nodo_fuente == nodo_destino:
+        print("Has llegado a tu destino.")
+        visitados_finales = " -> ".join([str(item) for item in visitados])
+        print("Camino seguido: {} -> {}".format(nodo_fuente_final, visitados_finales))
+        print("Costo: {}".format(distancia))
+
+if nodo_fuente not in grafo:
+    print(
+        "No se puede llegar al punto final desde este origen debido a la falta de un camino disponible."
+    )
